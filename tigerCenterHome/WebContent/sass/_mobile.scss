@@ -1,0 +1,69 @@
+@media only screen and (max-width: 640px) {
+  //desktop equivalent styles found in _globalStyles.scss
+  #header, #footer{
+    padding: 0 10px;
+  }
+
+  #headRight, #footerRight{
+    text-align:left;
+  }
+
+  //desktop equivalent styles found in _home.scss
+  .nameRow{
+    font-size:16px;
+    padding-top:10px;
+  }
+
+  .selectTermSchedule{
+    width: 100%; 
+    margin: 15px 0;
+    border: 1px solid #cccccc;
+    padding: 0.5rem;    
+    background-size: 25px 7px; 
+    background-color: #f3f3f3;
+  }
+  
+  #colPad{
+    padding-left: 0.9375rem;
+    padding-right: 0.9375rem;
+  }
+    
+  .sidebar{
+    margin:10px 15px;
+    width:92% !important;
+  }
+    
+  #datepicker{
+    width: 80%;
+  }
+    
+  #noCal{
+    padding-right: 0.9375rem;
+  } 
+  
+  #importantInfo{
+    padding-right: 0.9375rem;
+  }
+  
+  //desktop equivalent styles found in _button.scss
+  .downloadButton{
+    width: 100%;
+  }
+    
+  .buttonMedium{
+    width:315px;  
+  }
+    
+  .buttonLarge{
+    width:100%; 
+  }
+    
+  .menuButton{
+    background-position: 90px;
+  }
+    
+  .exploreButton{
+    background-position: 90px;
+  }
+  
+}

@@ -1,0 +1,308 @@
+<div class="row" ng-if="error != null">
+	<div id="error" class="large-12 error message">
+		<b>Error: </b>{{ error.description }} ({{error.id}})
+	</div>
+</div>
+<div class="row collapse" ng-init="oldSelection=null; newSelection=null;">
+	<div class="large-9 columns">
+		<span style="margin-right:25px; display:none;">{{ resolveCareer() }}</span>
+		<span style="margin-right:25px; display:none;">{{ initialize() }}</span>
+		<strong class="text-left hide-for-small-only">SWAP CLASS ENROLLMENT OPTIONS
+		<select ng-if="user.termsActivated[term].length > 1" ng-model="$parent.selectedCareer" ng-change="setupForAnotherSwap()" class="selectTermSchedule">
+			<option value="UGRD">Undergrad</option>
+			<option value="GRAD">Graduate</option>
+		</select>
+		</strong>
+		<strong class="text-center show-for-small-only">SWAP CLASS ENROLLMENT OPTIONS
+		<select ng-if="user.termsActivated[term].length > 1" ng-model="$parent.selectedCareer" ng-change="setupForAnotherSwap()" class="selectTermSchedule">
+			<option value="UGRD">Undergrad</option>
+			<option value="GRAD">Graduate</option>
+		</select>
+		</strong>
+	</div>
+	<div class="large-3 columns text-right">
+		<a href="{{enrollUrl}}">
+			<button class="baseButton standardButton buttonXLarge mobileButton" type="submit"><img class="buttonImg" src="images/back_arrow.png"/>Back to Schedule</button>
+  		</a>
+	</div>
+</div>
+<div class="row">
+		<table class="swapTable large-12 columns">
+			<thead>
+				<tr class="row">
+					<th class="large-12 columns">
+						<strong>CURRENT CLASS</strong></br>
+						<small>(CHOOSE CLASS FROM YOUR SCHEDULE)</small>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="row" ng-if="loaded.schedule && !swapSuccess">
+					<td class="large-12 columns custom-arrow">
+						<select ng-model="$parent.oldSelection" ng-options="course.stuClass.displayName for course in schedule | filter : {allowSwap : true, academicCareer : selectedCareer}">
+								<option value="" disabled selected>Choose a class from your schedule.</option>
+						</select>
+					</td>
+				</tr>
+				<tr class="row" ng-if="loaded.schedule && swapSuccess">
+					<td class="large-12 columns custom-arrow">
+						<select disabled ng-model="$parent.oldSelection" ng-options="course.stuClass.displayName for course in schedule | filter : {allowSwap : true, academicCareer : selectedCareer}">
+								<option value="" disabled selected>Choose a class from your schedule.</option>
+						</select>
+					</td>
+				</tr>
+				<tr ng-if="!loaded.schedule" id="progress" ng-class="progressbarschedule">
+					<th class="progressbar large-12 columns" style="padding:2px;line-height:1.428571429;background-color:#F8F7ED;vertical-align:top;border-top:1px solid #ddd;">
+						<progressbar class="progressbar progress-striped active" max="1000" value="progressschedule"></progressbar>
+					</th>
+				</tr>
+			</tbody>
+			<thead>
+				<tr class="row">
+					<th class="large-12 columns">
+						<strong>NEW CLASS</strong></br>
+						<small>(CHOOSE CLASS FROM YOUR SHOPPING CART OR SEARCH FOR NEW CLASS)</small>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-if="!loaded.cart" id="progress" ng-class="progressbarcart">
+					<th class="progressbar large-12 columns" style="padding:2px;line-height:1.428571429;background-color:#F8F7ED;vertical-align:top;border-top:1px solid #ddd;">
+						<progressbar class="progressbar progress-striped active" max="1000" value="progresscart"></progressbar>
+					</th>
+				</tr>
+				<tr class="row" ng-if="loaded.cart && !swapSuccess">
+					<td class="large-12 columns custom-arrow">
+						<select ng-model="$parent.newSelection" ng-options="course.stuClass.displayName for course in cart | filter : {academicCareer : selectedCareer}">
+								<option value="" disabled selected>Choose a class from your cart.</option>
+							</select>
+					</td>
+				</tr>
+				<tr class="row" ng-if="loaded.cart && swapSuccess">
+					<td class="large-12 columns custom-arrow">
+						<select disabled ng-model="$parent.newSelection" ng-options="course.stuClass.displayName for course in cart | filter : {academicCareer : selectedCareer}">
+								<option value="" disabled selected>Choose a class from your cart.</option>
+							</select>
+					</td>
+				</tr>
+				<tr class="row" ng-if="loaded.cart">
+					<td class="large-12 columns"><strong>OR</strong></td>
+				</tr>
+				<tr class="row">
+					<td class="large-12 columns">
+						<div class="row collapse" ng-if="!swapSuccess && loaded.cart">
+								<div id="searchForm" class = "large-10 columns">	
+									<input onkeydown="if (event.keyCode == 13) document.getElementById('btnSearch').click()" type="text" placeholder="BEGIN BY TYPING A COURSE NUMBER, COURSE NAME, OR SUBJECT CODE" ng-model="$parent.query"/>
+								</div>
+							<div class="large-2 columns">
+									<input id="btnSearch" class="orangeBtn postfix" type="submit" value = "SEARCH" ng-click="searchClasses()"/>
+							</div>
+						</div>
+						<div class="row collapse" ng-if="swapSuccess && loaded.cart">
+								<div id="searchForm" class = "large-10 columns">	
+									<input disabled onkeydown="if (event.keyCode == 13) document.getElementById('btnSearch').click()" type="text" placeholder="BEGIN BY TYPING A COURSE NUMBER, COURSE NAME, OR SUBJECT CODE" ng-model="$parent.query"/>
+								</div>
+							<div class="large-2 columns">
+									<input disabled id="btnSearch" class="postfix" type="submit" value = "SEARCH" ng-click="searchClasses()"/>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="row">
+					<td class="large-12 columns"><hr/></td>
+				</tr>
+				<tr>
+					<td class="row">
+						<div class="large-5 columns">
+							<div class="row collapse classHolder" ng-if="oldSelection">
+								<div class="small-3 columns text-center verticalClass" ng-switch="oldSelection.stuClass.enrollStatus")>
+									<img ng-switch-when="O" src = "images/open.png">
+									<p ng-switch-when="O" class = "greenTxt"><small>Open</small></p>
+									
+									<img ng-switch-when="W" src = "images/wait.png">
+									<p ng-switch-when="W" class = "blackTxt"><small>Waitlist</small></p>
+									
+									<img ng-switch-when="C" src = "images/close.png">
+									<p ng-switch-when="C" class = "redTxt"><small>Closed</small></p>
+									
+									<img ng-if="oldSelection.stuClass.realtimeLoaded" src = "images/loader.gif">
+									<p ng-if="oldSelection"><small>{{oldSelection.stuClass.enrollmentTotal}}/{{oldSelection.stuClass.enrollmentCap}}</small></p>
+								</div>
+								<div class="small-1 columns">
+									<div class = "verticalRule"></div>
+								</div>
+								<div class="small-8 columns">
+									<p><small>{{ oldSelection.stuClass.courseTitleLong }}</small></p>
+									<p class="indentNumber orangeTxt"><small>{{ oldSelection.stuClass.subject }} {{ oldSelection.stuClass.catalogNumber }} {{ oldSelection.stuClass.section }} {{ oldSelection.stuClass.classNumber }}</small></p>
+								</div>
+							</div>
+	
+							<div class="row collapse classHolder" ng-if="!oldSelection">
+								<p class="text-center">Current Class Selection</p>
+							</div>
+						</div>
+				
+						<div class="large-2 columns text-center" style="padding:10px;">
+							<img src="images/swap.png" width = "30px" style="margin-bottom:5px;">
+							<p><small>SWAPPING FOR</small></p>
+						</div>
+						
+						<div class="large-5 columns">
+							<div class="row collapse classHolder" ng-if="newSelection">
+								<div class="small-3 columns text-center verticalClass" ng-switch="newSelection.stuClass.enrollStatus")>
+									<img ng-switch-when="O" src = "images/open.png">
+									<p ng-switch-when="O" class = "greenTxt"><small>Open</small></p>
+								
+									<img ng-switch-when="W" src = "images/wait.png">
+									<p ng-switch-when="W" class = "blackTxt"><small>Waitlist</small></p>
+									
+									<img ng-switch-when="C" src = "images/close.png">
+									<p ng-switch-when="C" class = "redTxt"><small>Closed</small></p>
+									
+									<img ng-if="newSelection.stuClass.realtimeLoaded" src = "images/loader.gif">
+									<p ng-if="newSelection"><small>{{newSelection.stuClass.enrollmentTotal}}/{{newSelection.stuClass.enrollmentCap}}</small></p>
+								</div>
+								<div class="small-1 columns">
+									<div class = "verticalRule"></div>
+								</div>
+								<div class="small-8 columns">
+									<p><small>{{ newSelection.stuClass.courseTitleLong }}</small></p>
+									<p class="orangeTxt indentNumber"><small>{{ newSelection.stuClass.subject }} {{ newSelection.stuClass.catalogNumber }} {{ newSelection.stuClass.section }} {{ newSelection.stuClass.classNumber }}</small></p>
+								</div>
+							</div>
+
+							<div class="row collapse classHolder" ng-if="!newSelection">
+								<p class="text-center">New Class Selection</p>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="row">
+					<td class="large-12 columns" style="padding-bottom:0;"><hr/></td>
+				</tr>
+				
+				<tr class="row fade" ng-repeat="sMessage in successMessages | resolveMessages:'messageDesc':cart:schedule">
+					<td class="large-12 columns ">
+						<p class="message success"><b>Success: </b>{{ sMessage.messageDesc }}</p>
+					</td>
+				</tr>
+				<tr class="row fade" ng-repeat="wMessage in warningMessages | resolveMessages:'messageDesc':cart:schedule">
+					<td class="large-12 columns ">
+						<p class="message warning"><b>Warning: </b>{{ wMessage.messageDesc }}</p>
+					</td>
+				</tr>
+				<tr class="row fade" ng-repeat="eMessage in errorMessages | resolveMessages:'messageDesc':cart:schedule">
+					<td class="large-12 columns ">
+						<p class="message error"><b>Error: </b>{{ eMessage.messageDesc }}</p>
+					</td>
+				</tr>
+				<tr class="row fade" ng-repeat="eMessage in errors | resolveMessages:'description':cart:schedule">
+					<td class="large-12 columns ">
+						<p class="message error"><b>Error: </b>{{ eMessage.description }}</p>
+					</td>
+				</tr>
+				<tr class="row">
+					<td class="large-12 columns text-right" style="margin-bottom:10px;" ng-if="!swapPending && !swapSuccess">
+						<a href={{enrollUrl}} style="margin-right:10px"><button class="baseButton standardButton buttonSmall" type="submit">Cancel</button></a>
+						<button class="baseButton standardButton buttonSmall" type="submit" ng-click="swapClasses()">Confirm</button>
+					</td>
+					<td class="large-12 columns text-right" style="margin-bottom:10px;" ng-if="swapPending && !swapSuccess">
+						<img src="images/loader.gif" alt="Loading" style="margin:10px;"/>
+						<button class="baseButton standardButton buttonSmall" type="submit" disabled>Cancel</button>
+						<button class="baseButton standardButton buttonSmall" type="submit" disabled>Confirm</button>
+					</td>
+					<td class="large-12 columns text-right" style="margin-bottom:10px;" ng-if="swapSuccess">
+						<button class="baseButton buttonLarge standardButton" type="submit" ng-click="setupForAnotherSwap()">Swap Another Class</button>
+						<a href="{{enrollUrl}}"><button class="baseButton buttonLarge enrolledButton" type="submit">Go to Schedule</button></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br/>
+
+		<strong class="text-left">PENDING SWAPS</strong>
+
+		<table class="swapTable">
+			<thead>
+				<tr class="row" style="background-color: #3f3f3f; color: white; opacity: 0.9;">
+					<th>
+						<p class="small-6 columns text-center">
+							<strong>CURRENT CLASS <strong class="large-6 columns text-center hide-for-large-up">(TOP)</strong></strong>
+						</p>
+						<p class="small-6 columns text-center">
+							<strong>NEW CLASS <strong class = "large-6 columns text-center hide-for-large-up">(BOTTOM)</strong></strong>
+						</p>
+					</th>
+				</tr>
+			</thead>
+			<tbody ng-if="!pendingSwaps.length == 0">
+				<tr ng-repeat="pairedSwap in pendingSwaps" class="row">
+					<td>
+						<div class="large-5 small-12 columns">
+							<div class="row collapse classHolder">
+								<div class="small-3 columns text-center verticalClass" ng-switch="pairedSwap.currentClass.stuClass.enrollStatus">
+									<img ng-switch-when="O" src="images/open.png">
+									<p ng-switch-when="O" class="greenTxt"><small>Open</small></p>
+									
+									<img ng-switch-when="W" src="images/wait.png">
+									<p ng-switch-when="W" class="blackTxt"><small>Waitlist</small></p>
+									
+									<img ng-switch-when="C" src="images/close.png">
+									<p ng-switch-when="C" class="redTxt"><small>Closed</small></p>
+									
+									<img ng-if="!pairedSwap.currentClass.realtimeLoaded" src="images/loader.gif">
+									<p ng-if="pairedSwap.currentClass.realtimeLoaded"><small>{{ pairedSwap.currentClass.stuClass.enrollmentTotal}}/{{pairedSwap.currentClass.stuClass.enrollmentCap}}</small></p>
+
+								</div>
+								<div class="small-1 columns">
+									<div class="verticalRule"></div>
+								</div>
+								<div class="small-8 columns">
+									<p><small>{{ pairedSwap.currentClass.stuClass.courseTitleLong }}</small></p>
+									<p class="orangeTxt indentNumber"><small>{{ pairedSwap.currentClass.subject }} {{ pairedSwap.currentClass.catalogNum }} {{ pairedSwap.currentClass.section }} {{ pairedSwap.currentClass.classNbr }}</small></p>
+								</div>
+							</div>
+						</div>
+						<div class="large-2 small-12 columns text-center verticalSwap">
+							<img src="images/swap.png" width = "30px" style="margin-bottom:5px;">
+							<p><small>SWAPPING FOR</small></p>
+						</div>
+						<div class="large-5 small-12 columns">
+							<div class="row collapse classHolder">
+								<div class="small-3 columns text-center verticalClass" ng-switch="pairedSwap.swappingClass.stuClass.enrollStatus">
+									<img ng-switch-when="O" src = "images/open.png"/>
+									<p ng-switch-when="O" class = "greenTxt"><small>Open</small></p>
+									
+									<img ng-switch-when="W" src = "images/wait.png"/>
+									<p ng-switch-when="W" class = "blackTxt"><small>Waitlist</small></p>
+									
+									<img ng-switch-when="C" src = "images/close.png"/>
+									<p ng-switch-when="C" class = "redTxt"><small>Closed</small></p>
+									
+									<img ng-if="!pairedSwap.swappingClass.realtimeLoaded" src="images/loader.gif">
+									<p ng-if="pairedSwap.swappingClass.realtimeLoaded" tooltip-placement="top" tooltip="Note: You may still be prevented from being enrolled because of the following reasons: time conflict, reserve capacity criteria, account holds, or max credit hours reached."><small>{{pairedSwap.swappingClass.stuClass.enrollmentTotal}}/{{pairedSwap.swappingClass.stuClass.enrollmentCap}}</small></p>
+
+								</div>
+								<div class = "small-1 columns">
+									<div class = "verticalRule"></div>
+								</div>
+								<div class = "small-8 columns">
+									<p><small>{{ pairedSwap.swappingClass.stuClass.courseTitleLong }}</small></p>
+									<p class = "orangeTxt indentNumber"><small>{{ pairedSwap.swappingClass.subject }} {{ pairedSwap.swappingClass.catalogNum }} {{ pairedSwap.swappingClass.section }} {{ pairedSwap.swappingClass.classNbr }}</small></p>
+
+								</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+			<tbody class="fade"ng-if="pendingSwaps.length == 0">
+				<tr class="row">
+					<td>
+						<p class="large-12 columns message warning">You currently have no pending swaps.</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

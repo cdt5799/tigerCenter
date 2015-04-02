@@ -1,0 +1,230 @@
+.userName{
+  margin:7px 0;
+  font-size:15pt;
+}
+
+.selectTermSchedule{
+  width: 250px;
+  margin: 0 0 0 10px;
+  border: none;
+  padding: 0 0 1px 0;
+  background-size: 25px 7px;
+  background-color:inherit;
+}
+
+.styledTableHeader{
+  background: #3f3f3f;
+  margin-right: 20px;
+  opacity:0.9;
+
+  th{
+    color: #FFFFFF;
+  }
+}
+
+.classData{
+  margin-top:10px;
+  text-align: center;
+}
+
+.tableFooter{
+    background:#FCF5B4;
+
+  tr{
+    border-top:solid;
+    border-width: 1px;
+    border-color: #dddddd;
+  }
+
+}
+
+
+.tableLabel{
+  padding: 50px 0 10px 0;
+}
+
+.tableWarning{
+  margin-bottom: 10px !important;
+  font-size: 14px;
+}
+
+.message{
+  border: solid;
+  border-width: 2px;
+  padding: 10px;
+  margin: 0 -5px;
+}
+
+.warning{
+    border-color:$waitlistClass;
+    background-color:$waitlistClassBg;
+}
+
+.error{
+    border-color:$closedClass;
+    background-color:$closedClassBg;
+}
+
+.success{
+    border-color:$openClass;
+    background-color:$openClassBg;
+}
+
+.scheduleRows{
+  background-color: $rowA;
+
+  tbody:nth-child(odd) {
+    background-color: #E2E2E2;
+  }
+}
+
+.shoppingRows{
+  background-color: $rowA;
+
+  tbody:nth-child(odd) {
+    background-color: #E2E2E2;
+  }
+}
+
+.shoppingCartValidateIcon {
+  width: 35px;
+}
+
+.schedueleIcon {
+  width: 30px;
+  float: left;
+  margin-right:10px;
+}
+.successLabel{
+  text-align:center;
+  color: $openClass;
+}
+
+.warningLabel{
+  text-align:center;
+  color: #000000;
+}
+
+.withdrawLabel{
+  text-align:center;
+  color: #000000;
+}
+
+.aduitLabel{
+	text-align:center;
+	color:#000000;
+}
+
+
+.errorLabel{
+  text-align:center;
+  color: $closedClass;
+}
+
+.unknownLabel{
+  text-align:center;
+  color: #000000;
+}
+
+.classStatus {
+  p{
+    text-align:center;
+    display:inline-block;
+    vertical-align:middle;
+    margin-left:15px;
+  }
+
+  img{
+    display:inline-block;
+  }
+}
+
+.open{
+  color: $openClass;
+}
+
+.wait{
+  color: #000000;
+  font-size:13px;
+}
+
+.closed{
+  color: $closedClass;
+}
+
+.buttonSpacing{
+  margin: 0px 0px 0px 10px;
+}
+
+.buttonAlignmentL{
+  text-align:left;
+}
+
+.buttonAlignmentR{
+  text-align:right;
+}
+
+.classTitleRow {
+  padding-top: 15px;
+}
+
+.classTitle{
+  color: #3f3f3f;
+  font-weight: 200;
+  font-size: 25px;
+  display: inline-block;
+  margin-left: 25px;
+  vertical-align:middle;
+}
+
+.shopTitle{
+  color: #3f3f3f;
+  font-weight: 200;
+  font-size: 25px;
+  padding:20px 0;
+}
+
+.statusText{
+  display:inline-block;
+  vertical-align:middle;
+  text-align: center;
+}
+
+//animation code for fading messages
+.fade.ng-enter, .fade.ng-leave.ng-leave-active, .fade.ng-move {
+   -webkit-transition: 0.2s all linear;
+   -ms-transition: 0.2s all linear;
+   -o-transition: 0.2s all linear;
+   transition: 0.2s all linear;
+   opacity: 0;
+}
+
+.expand.ng-enter, .expand.ng-leave.ng-leave-active, .expand.ng-move {
+   -webkit-transition: 0.2s all linear;
+   -ms-transition: 0.2s all linear;
+   -o-transition: 0.2s all linear;
+   transition: 0.2s all linear;
+   -webkit-transform: scale(1, 0);
+   -ms-transform: scale(1, 0);
+   -o-transform: scale(1, 0);
+   transform: scale(1, 0);
+}
+
+.fade.ng-leave, .fade.ng-enter.ng-enter-active, .fade.ng-move.ng-move-active {
+   -webkit-transition: 0.2s all linear;
+   -ms-transition: 0.2s all linear;
+   -o-transition: 0.2s all linear;
+   transition: 0.2s all linear;
+   opacity: 1;
+}
+
+.expand.ng-leave, .expand.ng-enter.ng-enter-active, .expand.ng-move.ng-move-active {
+   -webkit-transition: 0.2s all linear;
+   -ms-transition: 0.2s all linear;
+   -o-transition: 0.2s all linear;
+   transition: 0.2s all linear;
+   -webkit-transform: scale(1, 1);
+   -ms-transform: scale(1, 1);
+   -o-transform: scale(1, 1);
+   transform: scale(1, 1);
+}

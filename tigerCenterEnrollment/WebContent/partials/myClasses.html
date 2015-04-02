@@ -1,0 +1,549 @@
+<div class="row" ng-if="error != null">
+	<div id="error" class="large-12 medium-12 small-12 error message">
+		<b>Error: </b>{{ error.description }} ({{error.id}})
+	</div>
+</div>
+<span style="margin-right:25px; display:none;">{{ resolveTerms(form.termSelect) }}</span>
+<span style="margin-right:25px; display:none;">{{ resolveCareer() }}</span>
+<div class="row collapse">
+		<strong class="large-4 medium-12 small-12 columns userName">{{ user.givenName }}</strong>
+		<strong class="large-3 medium-12 small-12 columns">
+			<select ng-if="fields.loaded" ng-model="form.termSelect" ng-change="loadClasses()" ng-options="term.strm as term.descr for term in fields.termField" class="selectTermSchedule"></select>
+		</strong>
+		<strong class="large-3 medium-12 small-12 columns">	
+			<select ng-if="user.termsActivated[form.termSelect].length > 1" ng-change="loadClasses()" ng-model="$parent.selectedCareer" class="selectTermSchedule">
+				<option value="UGRD">Undergrad</option>
+				<option value="GRAD">Graduate</option>
+			</select>
+		</strong>
+		<span class="large-2 medium-12 small-12 columns text-right">
+			<a href="{{homeUrl}}"><button class="baseButton standardButton buttonLarge calButton" type="submit" ><img class="buttonImg" src="images/calendar.png"/>View Calendar</button></a>
+		</span>
+</div>
+
+<!--Table warning -->
+<div class="row">
+	<div class="large-6 medium-12 small-12 columns tableLabel" style="padding-top:75px;">
+		<strong class="text-left">Class Schedule</strong>
+	</div>
+	<div class="large-6 medium-12 small-12 columns tableLabel buttonAlignmentR">
+		<button class="baseButton standardButton buttonLarge" type="submit" ng-click="$apply(getTextbooksSchedule());gotoTextbooks();"><img class="buttonImg" src="images/book.png"/>View Textbooks</button>
+	</div>
+</div>
+
+<div class="row message warning tableWarning fade" ng-if="waitlistedClasses && (schedule | filter : {academicCareer : selectedCareer}).length != 0">
+	<div class="large-12 medium-12 small-12 columns ">
+		<p><b>Warning: </b>You have wait listed classes in your schedule. Please note that you are not currently enrolled in these classes.</p>
+	</div>
+</div>
+<div ng-repeat="error in scheduleErrors" class="row message error tableWarning fade">
+	<div class="large-12 medium-12 small-12 columns ">
+		<p><b>Error: </b>{{ error.description }}</p>
+	</div>
+</div>
+
+<div class="row">
+	<table class="scheduleRows large-12 medium-12 small-12 columns table classTableBorder" cellpadding="4" cellspacing="0" style="padding:15px; background:#FFFFFF">
+		<thead>
+			<tr class="row styledTableHeader show-for-large-only">
+				<th class="large-2 columns text-center" scope="col">{{ locale.coursenum }}</th>
+				<th class="large-3 columns  text-center" scope="col"><img src="images/clock.png" width="20px"/>{{ locale.daystimes }}</th>
+				<th class="large-2 columns  text-center" scope="col"><img src="images/letter.png"  width="25px" style="margin-top:-3px;"/>{{ locale.instructornocol }}</th>	
+				<th class="large-2 columns  text-center" scope="col"><img src="images/location.png" width="20px"/>{{ locale.locationnocol }}</th>
+				<th class="large-1 columns text-center" scope="col">{{ locale.creditsnocol }}</th>
+				<th class="large-1 columns text-center"	scope="col">{{ locale.grading }}</th>
+				<th class="large-1 columns text-center" scope="col">{{ locale.career }}</th>
+			</tr>
+		</thead>
+		<!--Progress Bar-->
+		<tbody ng-if="!loaded.schedule">
+			<tr id="progress" class="row" ng-class="progressbarschedule">
+				<th class="progressbar large-12 medium-12 small-12 columns" style="padding:2px;line-height:1.428571429;background-color:#F8F7ED;vertical-align:top;border-top:1px solid #ddd;">
+					<progressbar class="progressbar progress-striped active" max="1000" value="progressschedule"></progressbar>
+				</th>
+			</tr>
+		</tbody>
+		<!--Schedule Messages-->
+		<tbody class="fade" ng-if="(schedule | filter : {academicCareer : selectedCareer}).length == 0 && loaded.schedule">
+			<tr class="row">
+				<td class="large-12 medium-12 small-12 columns "><p class="message warning">You are not enrolled in any classes.</p></td>
+			</tr>
+		</tbody>
+		<tbody class="fade" ng-if="!enrolledSuccess">
+			<tr class="row">
+				<td class="large-12 medium-12 small-12 columns">{{ enrolledMessage }}</td>
+			</tr>
+		</tbody>
+		<!--Enrolled in classes -->
+		<tbody ng-if="(schedule | filter : {academicCareer : selectedCareer}).length != 0 && enrolledSuccess==true" ng-repeat="course in schedule | filter : {academicCareer : selectedCareer}">
+			<!--Success-->
+			<tr class="row fade" ng-repeat="sMessage in course.successMessages | resolveMessages:'messageDesc':cart:schedule">
+				<td class="large-12 medium-12 small-12 columns "><p class="message success"><b>Success: </b>{{ sMessage.messageDesc }}</p></td>
+			</tr>
+			<!--Warning-->
+			<tr class="row fade" ng-repeat="wMessage in course.warningMessages | resolveMessages:'messageDesc':cart:schedule">
+				<td class="large-12 medium-12 small-12 columns "><p class="message warning"><b>Warning: </b>{{ wMessage.messageDesc }}</p></td>
+			</tr>
+			<!--Error-->
+			<tr class="row fade" ng-repeat="eMessage in course.errorMessages | resolveMessages:'messageDesc':cart:schedule">
+				<td class="large-12 medium-12 small-12 columns "><p class="message error"><b>Error: </b>{{ eMessage.messageDesc }}</p></td>
+			</tr>
+			<!--Gateway Error-->
+			<tr class="row fade" ng-repeat="eMessage in course.errors | resolveMessages:'description':cart:schedule">
+				<td class="large-12 medium-12 small-12  columns "><p class="message error"><b>Error: </b>{{ eMessage.description }}</p></td>
+			</tr>
+			<tr class="row" ng-if="!course.hide">
+				<td class="large-12 medium-12 small-12 columns classTitleRow" ng-if="course.realtimeLoaded" ng-switch on="course.enrollStatusCode">
+					<img src="images/success.png" class="schedueleIcon" alt="open" ng-switch-when="E"/> 
+					<img src="images/waitlistYellow.png" class="schedueleIcon" alt="wait list" ng-switch-when="W" style="margin-top: 10px;"/> 
+					<img src="images/withdraw.png" class="schedueleIcon" alt="withdrawn" ng-switch-when="WD"/> 
+					<p class="statusText">
+						<span class="successLabel" ng-switch-when="E">{{ course.enrollStatusDescr }}</span>
+						<span class="warningLabel" style="margin-top:3px;" ng-switch-when="W">{{ course.enrollStatusDescr }}</span>
+						<span class="withdrawLabel" style="margin-top:5px;" ng-switch-when="WD">{{ course.enrollStatusDescr }}</span>
+						
+						<br/>
+						{{ course.stuClass.enrollmentTotal}} / {{ course.stuClass.enrollmentCap}} 
+						<br>
+						<span ng-if="course.enrollStatusCode=='W'" tooltip-placement="bottom" tooltip="Note: You may still be prevented from being enrolled because of the following reasons: time conflict, reserve capacity criteria, account holds, or max credit hours reached.">Position: {{ course.waitListPos }}</span>
+		
+					</p>
+					<p class="classTitle">{{ course.stuClass.courseTitleLong }} <span ng-if="course.stuClass.printTopic == 'Y'">({{ course.stuClass.courseTopic }})</span></p>
+
+				</td>
+				<td class="large-12 medium-12 small-12 columns classTitleRow" ng-if="!course.realtimeLoaded" style="margin-left:10px;">
+					<img src="images/loader.gif" alt="loading"  /> 
+					<span ng-if="!course.realtimeLoaded" style="margin-left:10px;">{{ locale.loading }} </span>
+					<p class="classTitle">{{ course.stuClass.courseTitleLong }} <span ng-if="course.stuClass.printTopic == 'Y'">({{ course.stuClass.courseTopic }})</span></p>
+				</td>
+					
+			</tr>
+			<tr class="row" ng-if="!course.hide">
+				<td class="large-12 medium-12 small-12 columns"><hr class="HRstyle" style="margin:0;"/></td>
+			</tr>
+			<tr class="row" ng-init="course.actionPending = 'no'" ng-if="!course.hide">
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.coursenum }}</strong></td>
+				<td class="large-2 medium-9 small-7 columns classData ">
+					<span tooltip-placement="bottom" tooltip="Click to view class details.">
+						<a class="orangeTxt" href="{{searchUrl}}home#/detail?ppSearchId={{course.stuClass.ppSearchId}}&mode=schedule" alt="Go To Class Details">{{ course.stuClass.subject }} {{ course.stuClass.catalogNumber }} {{ course.stuClass.section }} {{ course.stuClass.classNumber }}</a>
+					</span><br/>
+					<small>({{ resolveComponent(course) }})</small>
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.daystimes }}</strong></td>
+				<td class="large-3 medium-9 small-7 columns classData"><span ng-repeat="daytime in course.stuClass.meetings.daytimes">{{ daytime }}<br/></span></td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.instructornocol }}</strong></td>				
+				<td class="large-2 medium-9 small-7 columns classData">
+					<span ng-repeat="instructor in course.stuClass.meetings.instructors | regexString:'[\t]':'F'">
+						{{ instructor }}<br/>
+					</span>
+					<span tooltip-placement="bottom" tooltip="Email {{ instructor }}" ng-repeat="instructor in course.stuClass.meetings.instructors | regexString:'[\t]':'T'">
+						<a class="orangeTxt" href="mailto:{{course.stuClass.meetings.instructorEmails[$index]}}" target="_blank">{{ instructor }}</a><br/>
+					</span>
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.locationnocol }}</strong></td>				
+				<td class="large-2 medium-9 small-7 columns classData  ">
+					<span ng-repeat="location in course.stuClass.meetings.locationsShort | regexString:' ':'F':'MAIN':schedule[$index].stuClass.campus">{{ location }}<br/></span>
+					<span tooltip-placement="bottom" tooltip="View the classroom's location on the interactive map (main campus only)." ng-repeat="location in course.stuClass.meetings.locationsShort | regexString:' ':'T':'MAIN':schedule[$index].stuClass.campus">
+						<a class="orangeTxt" href="http://maps.rit.edu/index.php?multi={{ location }}" target="_blank">{{ location }}</a><br/>
+					</span>
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.creditsnocol }}</strong></td>								
+				<td class="large-1 medium-9 small-7 columns classData " ng-if="course.unitsMaximum == course.unitsMinimum">{{ course.stuClass.unitsMaximum }}</td>
+				<td class="large-1 medium-9 small-7 columns classData " ng-if="course.unitsMaximum != course.unitsMinimum">{{ course.stuClass.unitsMinimum }} - {{ course.stuClass.unitsMaximum }}</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.grading }}</strong></td>
+				<td class="large-1 medium-9 small-7 columns classData " tooltip-placement="bottom" tooltip="{{ resolveGradingBasis(course.gradingBasisCode) }}">{{ course.gradingBasisCode }}</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.career }}</strong></td>
+				<td class="large-1 medium-9 small-7 columns classData " tooltip-placement="bottom" tooltip="{{ resolveCareerCode(course.academicCareer) }}">{{ course.academicCareer }}</td>	
+			
+			</tr>
+			<tr class="row" ng-if="!course.hide" ng-repeat="related in course.relatedClasses">				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.coursenum }}</strong></td>
+				<td class="large-2 medium-9 small-7 columns classData ">
+					<span tooltip-placement="bottom" tooltip="Click to view class details.">
+						<a class="orangeTxt" href="{{searchUrl}}home#/detail?ppSearchId={{course.stuClass.ppSearchId}}" alt="Go To Class Details">{{ related.stuClass.subject }} {{ related.stuClass.catalogNumber }} {{ related.stuClass.section }} {{ related.stuClass.classNumber }}</a>
+					</span><br/>
+					<small>({{ resolveComponent(related) }})</small>	
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.daystimes }}</strong></td>
+				<td class="large-3 medium-9 small-7 columns classData  "><span ng-repeat="daytime in related.stuClass.meetings.daytimes">{{ daytime }}<br/></span></td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.instructornocol }}</strong></td>
+				<td class="large-2 medium-9 small-7 columns classData  ">
+					<span ng-repeat="instructor in related.stuClass.meetings.instructors | regexString:'[\t]':'F'">
+						{{ instructor }}<br/>
+					</span>
+					<span tooltip-placement="bottom" tooltip="Email {{ instructor }}" ng-repeat="instructor in related.stuClass.meetings.instructors | regexString:'[\t]':'T'">
+						<a class="orangeTxt" href="mailto:{{related.stuClass.meetings.instructorEmails[$index]}}" target="_blank">{{ instructor }}</a><br/>
+					</span>
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.locationnocol }}</strong></td>
+				<td class="large-2 medium-9 small-7 columns classData  ">
+					<span ng-repeat="location in related.stuClass.meetings.locationsShort | regexString:' ':'F':'MAIN':course.relatedClasses[$index].stuClass.campus">{{ location }}<br/></span>
+					<span tooltip-placement="bottom" tooltip="View the classroom's location on the interactive map (main campus only)." ng-repeat="location in related.stuClass.meetings.locationsShort | regexString:' ':'T':'MAIN':course.relatedClasses[$index].stuClass.campus">
+						<a class="orangeTxt" href="http://maps.rit.edu/index.php?multi={{ location }}" target="_blank">{{ location }}</a><br/>
+					</span>
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.creditsnocol }}</strong></td>
+				<td class="large-1 medium-9 small-7 columns classData  " ng-if="related.unitsMaximum == related.unitsMinimum">{{ related.stuClass.unitsMaximum }}</td>
+				<td class="large-1 medium-9 small-7 columns classData  " ng-if="related.unitsMaximum != related.unitsMinimum">{{ related.stuClass.unitsMinimum }} - {{ related.stuClass.unitsMaximum }}</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.grading }}</strong></td>
+				<td class="large-1 medium-9 small-7 columns classData " tooltip-placement="bottom" tooltip="{{ resolveGradingBasis(related.gradingBasisCode) }}">{{ related.gradingBasisCode }}</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"><strong>{{ locale.career }}</strong></td>
+				<td class="large-1 medium-9 small-7 columns classData " tooltip-placement="bottom" tooltip="{{ resolveCareerCode(related.academicCareer) }}">{{ related.academicCareer }}</td>	
+				
+			</tr>
+			<tr class="row" ng-if="!course.noButtons && !course.hide">
+				<td class="large-12 medium-12 small-12 columns"><hr class="HRstyle" style="margin:0;"/></td>
+			</tr>
+			<tr class="row" ng-if="!course.noButtons && !course.hide">
+				<td class="large-12 medium-12 small-12 columns buttonAlignmentR" ng-switch on="course.actionPending">
+					<span ng-switch-when="no">
+						<button class="baseButton standardButton buttonSmall buttonSpacing" type="submit" ng-click="swapClass(course)" ng-if="course.allowSwap">Swap</button>
+						<button class="baseButton standardButton buttonSmall buttonSpacing" data-reveal-id="gradingModal" type="submit" ng-click="sendGrading(course)" ng-if="course.allowEdit && !course.related">Grading</button>
+						<button class="baseButton standardButton buttonSmall buttonSpacing" data-reveal-id="dropModal" type="submit" ng-click="sendDrop(course)" ng-if="course.allowDrop">Drop</button>
+					</span>
+					<span ng-switch-when="yes">
+						<img src="images/loader.gif" alt="Loading"/>
+						<button class="baseButton standardButton buttonSmall buttonSpacing" type="submit" disabled ng-if="course.allowSwap">Swap</button>
+						<button class="baseButton standardButton buttonSmall buttonSpacing" disabled type="submit" ng-if="course.allowEdit && !course.related">Grading</button>
+						<button class="baseButton standardButton buttonSmall buttonSpacing" disabled type="submit" ng-if="course.allowDrop">Drop</button>
+					</span>
+				</td>
+			</tr>
+		</tbody>
+		<tfoot class="tableFooter">
+			<tr class"row">
+				<td class="large-12 medium-12 small-12 columns text-right" ng-if="minEnrolledCredits == maxEnrolledCredits"><strong style="padding:10px;">Total Credits in Schedule: {{ maxEnrolledCredits }}</strong></td>
+				<td class="large-12 medium-12 small-12 columns text-right" ng-if="minEnrolledCredits != maxEnrolledCredits"><strong style="padding:10px;">Total Credits in Schedule: {{ minEnrolledCredits }} - {{ maxEnrolledCredits }}</strong></td>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+
+<div class="row collapse">
+	<div class="large-12 medium-12 small-12 columns tableLabel">
+		<strong class="text-left">Shopping Cart</strong>
+	</div>	
+</div>
+
+<!--Table warning -->
+<div ng-repeat="error in cartErrors" class="row message error tableWarning fade">
+	<div class="large-12 medium-12 small-12 columns ">
+		<p><b>Error: </b>{{ error.description }}</p>
+	</div>
+</div>
+
+<div class="row">
+	<table class="shoppingRows classTableBorder large-12 columns" cellpadding="4" cellspacing="0" style="padding:15px">
+		<thead>
+			<tr class="row styledTableHeader show-for-large-only">
+				<th class="name large-2 columns text-center" width="30%" scope="col">{{ locale.coursenum }}</th>
+				<th class="times large-1 columns  text-center" width="20%" scope="col"><img src="images/clock.png" width="20px"/>{{ locale.statusnocol }}</th>
+				<th class="times large-3 columns  text-center" width="20%" scope="col"><img src="images/clock.png" width="20px"/>{{ locale.daystimes }}</th>
+				<th class="instructor large-2 columns  text-center" width="15%" scope="col"><img src="images/letter.png"  width="25px" style="margin-top:-3px;"/>{{ locale.instructornocol }}</th>	
+				<th class="location large-2 columns  text-center" width="10%" scope="col"><img src="images/location.png" width="20px"/>{{ locale.locationnocol }}</th>
+				<th class="credits large-1 columns  text-center" width="5%" scope="col">{{ locale.creditsnocol }}</th>
+				<th class="large-1 columns text-center" scope="col">{{ locale.grading }}</th>
+			</tr>
+		</thead>
+		<tbody ng-if="!loaded.cart">
+			<tr id="progress" ng-class="progressbarcart">
+				<th class="progressbar large-12 medium-12 small-12 columns" style="padding:2px;line-height:1.428571429;background-color:#F8F7ED;vertical-align:top;border-top:1px solid #ddd;">
+					<progressbar class="progressbar progress-striped active" max="1000" value="progresscart"></progressbar>
+				</th>
+			</tr>
+		</tbody>
+		<tbody class="fade" ng-if="(cart | filter : {academicCareer : selectedCareer}).length == 0 && loaded.cart && cartSuccess && !cartCleared">
+			<tr class="row">
+				<td class="large-12 medium-12 small-12 columns "><p class="message warning">You do not have any classes in your cart.</p></td>
+			</tr>
+		</tbody>
+		<tbody class="fade" ng-if="!cartSuccess  && loaded.cart">
+			<tr class="row">
+				<td class="large-12 medium-12 small-12 columns"><p>Unable to load cart due to an unexpected error.  Below is what we got back from the server:</p></td>
+			</tr>
+			<tr class="row" ng-repeat="msg in cartMessages">
+				<td class="large-12 medium-12 small-12 columns">{{ msg.description }}</td>
+			</tr>
+		</tbody>
+		<tbody class="fade" ng-if="(cart | filter : {academicCareer : selectedCareer}).length == 0 && cartCleared">
+			<tr class="row">
+				<td class="large-12 medium-12 small-12 columns"><p class="message success">Your cart has been successfully cleared.</p></td>
+			</tr>
+		</tbody>
+		<tbody ng-if="cart.length!=0 && cartSuccess==true" ng-repeat="course in cart | filter : {academicCareer : selectedCareer}">
+			<!--Success-->
+			<tr class="row" ng-repeat="sMessage in course.successMessages | resolveMessages:'messageDesc':cart:schedule">
+				<td class="large-12 medium-12 small-12 columns "><p class="message success"><b>Success: </b>{{ sMessage.messageDesc }}</p></td>
+			</tr>
+			<!--Warning-->
+			<tr class="row fade" ng-repeat="wMessage in course.warningMessages | resolveMessages:'messageDesc':cart:schedule">
+				<td class="large-12 medium-12 small-12 columns "><p class="message warning"><b>Warning: </b>{{ wMessage.messageDesc }}</p></td>
+			</tr>
+			<!--Error-->
+			<tr class="row fade" ng-repeat="eMessage in course.errorMessages | resolveMessages:'messageDesc':cart:schedule">
+				<td class="large-12 medium-12 small-12 columns "><p class="message error"><b>Error: </b>{{ eMessage.messageDesc }}</p></td>
+			</tr>
+			<!--Gateway Error-->
+			<tr class="row fade" ng-repeat="eMessage in course.errors | resolveMessages:'description':cart:schedule">
+				<td class="large-12 medium-12 small-12 columns "><p class="message error"><b>Error: </b>{{ eMessage.description }}</p></td>
+			</tr>
+			
+			<tr class="row" ng-if="!course.hide">
+				<td class="large-1 medium-2 small-2 columns text-center classTitleRow">
+					<input type="checkbox" ng-model="course.checked"/>
+				</td>
+				<td class="large-11 medium-10 small-10 columns classTitleRow shopTitle">
+					<p>{{ course.stuClass.courseTitleLong }} <span ng-if="course.stuClass.printTopic == 'Y'">({{ course.stuClass.courseTopic }})</span></p>
+				</td>
+			</tr>
+			<tr class="row" ng-if="!course.hide">
+				<td class="large-12 medium-12 small-12 columns" style="padding-top:0"><hr class="HRstyle" style="margin:0;"/></td>
+			</tr>
+			<tr class="row" ng-init="course.actionPending = 'no'; course.checked = true" ng-if="!course.hide">
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.coursenum }}: </strong></td>			
+				<td class="large-2 medium-9 small-7 columns classData "> 
+					<span tooltip-placement="bottom" tooltip="Click to view class details.">
+						<a class="orangeTxt" href="{{searchUrl}}home#/detail?ppSearchId={{course.stuClass.ppSearchId}}&mode=cart" alt="Go To Class Details">{{ course.stuClass.subject }} {{ course.stuClass.catalogNumber }} {{ course.stuClass.section }} {{ course.stuClass.classNumber }}</a>
+					</span> <br/>
+					<small>({{ resolveComponent(course) }})</small>	
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.statusnocol }}: </strong></td>
+				<td class="large-1 medium-9 small-7 columns classData classStatus" ng-if="course.realtimeLoaded" ng-switch on="course.stuClass.enrollStatus" style="padding-right:0;">
+					<img src="images/open.png" width="15px" alt="open" ng-switch-when="O"/> 
+					<img src="images/waitlistYellow.png" width="15px" alt="waitlist" ng-switch-when="W"/> 
+					<img src="images/close.png" width="15px" alt="closed" ng-switch-when="C"/> 
+					<p>
+						<span class="open" ng-switch-when="O">{{ locale.open }}</span>
+						<span class="wait" ng-switch-when="W">{{ locale.waitlist }}</span>
+						<span class="closed" ng-switch-when="C">{{ locale.closed }}</span>
+						<br/>
+						{{ course.stuClass.enrollmentTotal}} / {{ course.stuClass.enrollmentCap}}
+					</p>
+				</td>
+				<td class="large-1 medium-9 small-7 columns classData" ng-if="!course.realtimeLoaded" style="margin-left:10px;">
+					<img src="images/loader.gif" alt="loading"  /> 
+					<span ng-if="!course.realtimeLoaded" style="margin-left:10px;">{{ locale.loading }} </span>
+				</td>
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.daystimes }}: </strong></td>
+				<td class="large-3 medium-9 small-7 columns classData  "><span ng-repeat="daytime in course.stuClass.meetings.daytimes">{{ daytime }}<br/></span></td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.instructornocol }}: </strong></td>
+				<td class="large-2 medium-9 small-7 columns classData  ">
+					<span ng-repeat="instructor in course.stuClass.meetings.instructors | regexString:'[\t]':'F'">
+						{{ instructor }}<br/>
+					</span>
+					<span tooltip-placement="bottom" tooltip="Email {{ instructor }}" ng-repeat="instructor in course.stuClass.meetings.instructors | regexString:'[\t]':'T'">
+						<a class="orangeTxt" href="mailto:{{course.stuClass.meetings.instructorEmails[$index]}}" target="_blank">{{ instructor }}</a><br/>
+					</span>
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.locationnocol }}: </strong></td>
+				<td class="large-2 medium-9 small-7 columns classData  ">
+					<span ng-repeat="location in course.stuClass.meetings.locationsShort | regexString:' ':'F':'MAIN':cart[$index].stuClass.campus">{{ location }}<br/></span>
+					<span tooltip-placement="bottom" tooltip="View the classroom's location on the interactive map (main campus only)." ng-repeat="location in course.stuClass.meetings.locationsShort | regexString:' ':'T':'MAIN':cart[$index].stuClass.campus">
+						<a class="orangeTxt" href="http://maps.rit.edu/index.php?multi={{ location }}" target="_blank">{{ location }}</a><br/>
+					</span>
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.creditsnocol }}: </strong></td>
+				<td class="large-1 medium-9 small-7 columns classData  " ng-if="course.unitsMaximum == course.unitsMinimum">{{ course.stuClass.unitsMaximum }}</td>
+				<td class="large-1 medium-9 small-7 columns classData  " ng-if="course.unitsMaximum != course.unitsMinimum">{{ course.stuClass.unitsMinimum }} - {{ course.stuClass.unitsMaximum }}</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.grading }}: </strong></td>
+				<td class="large-1 medium-9 small-7 columns classData " tooltip-placement="bottom" tooltip="{{ resolveGradingBasis(course.gradingBasisCode) }}">{{ course.gradingBasisCode }}</td>
+			</tr>
+			
+			<tr class="row" ng-if="!course.hide" ng-repeat="related in course.relatedClasses">
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.coursenum }}: </strong></td>
+				<td class="large-2 medium-9 small-7 columns classData ">
+					<span tooltip-placement="bottom" tooltip="Click to view class details.">
+						<a class="orangeTxt" href="{{searchUrl}}home#/detail?ppSearchId={{course.stuClass.ppSearchId}}" alt="Go To Class Details">{{ related.stuClass.subject }} {{ related.stuClass.catalogNumber }} {{ related.stuClass.section }} {{ related.stuClass.classNumber }}</a>
+					</span><br/>
+					<small>({{ resolveComponent(related) }})</small>	
+				</td>
+				
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.statusnocol }}: </strong></td>
+				<td class="large-1 medium-9 small-7 columns classData classStatus" ng-if="course.realtimeLoaded" ng-switch on="course.stuClass.enrollStatus" style="padding-right:0;">
+					<img src="images/open.png" width="15px" alt="open" ng-switch-when="O"/> 
+					<img src="images/waitlistYellow.png" width="15px" alt="wait list" ng-switch-when="W"/> 
+					<img src="images/close.png" width="15px" alt="closed" ng-switch-when="C"/> 
+					<p>
+						<span class="open" ng-switch-when="O">{{ locale.open }}</span>
+						<span class="wait" ng-switch-when="W">{{ locale.waitlist }}</span>
+						<span class="closed" ng-switch-when="C">{{ locale.closed }}</span>
+						<br/>
+						{{ course.stuClass.enrollmentTotal}} / {{ course.stuClass.enrollmentCap}}
+					</p>
+				</td>
+				<td class="large-1 medium-9 small-7 columns classData" ng-if="!course.realtimeLoaded" style="margin-left:10px;">
+					<img src="images/loader.gif" alt="loading"  /> 
+					<span ng-if="!course.realtimeLoaded" style="margin-left:10px;">{{ locale.loading }} </span>
+				</td>
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.daystimes }}: </strong></td>
+				<td class="large-3 medium-9 small-7 columns classData  "><span ng-repeat="daytime in related.stuClass.meetings.daytimes">{{ daytime }}<br/></span></td>
+				<td class="hide-for-large-only small-5 medium-3 columns"> <strong>{{ locale.instructornocol }}: </strong></td>
+				<td class="large-2 medium-9 small-7 columns classData  ">
+					<span ng-repeat="instructor in related.stuClass.meetings.instructors | regexString:'[\t]':'F'">
+						{{ instructor }}<br/>
+					</span>
+					<span tooltip-placement="bottom" tooltip="Email {{ instructor }}" ng-repeat="instructor in related.stuClass.meetings.instructors | regexString:'[\t]':'T'">
+						<a class="orangeTxt" href="mailto:{{related.stuClass.meetings.instructorEmails[$index]}}" target="_blank">{{ instructor }}</a><br/>
+					</span>
+				</td>
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.locationnocol }}: </strong></td>
+				<td class="large-2 medium-9 small-7 columns classData  ">
+					<span ng-repeat="location in related.stuClass.meetings.locationsShort | regexString:' ':'F':'MAIN':course.relatedClasses[$index].stuClass.campus">{{ location }}<br/></span>
+					<span tooltip-placement="bottom" tooltip="View the classroom's location on the interactive map (main campus only)." ng-repeat="location in related.stuClass.meetings.locationsShort | regexString:' ':'T':'MAIN':course.relatedClasses[$index].stuClass.campus">
+						<a class="orangeTxt" href="http://maps.rit.edu/index.php?multi={{ location }}" target="_blank">{{ location }}</a><br/>
+					</span>
+				</td>
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.creditsnocol }}: </strong></td>
+				<td class="large-1 medium-9 small-7 columns classData  " ng-if="related.unitsMaximum == related.unitsMinimum">{{ related.stuClass.unitsMaximum }}</td>
+				<td class="large-1 medium-9 small-7 columns classData  " ng-if="related.unitsMaximum != related.unitsMinimum">{{ related.stuClass.unitsMinimum }} - {{ related.stuClass.unitsMaximum }}</td>
+				<td class="hide-for-large-only small-5 medium-3 columns classData"> <strong>{{ locale.grading }}: </strong></td>
+				<td class="large-1 medium-9 small-7 columns classData " tooltip-placement="bottom" tooltip="{{ resolveGradingBasis(related.gradingBasisCode) }}">{{ related.gradingBasisCode }}</td>
+			</tr>
+			
+			<tr class="row" ng-if="!course.noButtons && !course.hide">
+				<td class="large-12 medium-12 small-12 columns"><hr class="HRstyle" style="margin:0;"/></td>
+			</tr>
+			<tr class="row" ng-if="!course.noButtons && !course.hide">
+				<td class="large-12 medium-12 small-12 columns buttonAlignmentR" ng-switch on="course.actionPending">
+					<span ng-switch-when="no">
+						<button class="baseButton standardButton buttonSmall buttonSpacing" type="submit" data-reveal-id="deleteModal" ng-click="sendDelete(course)">Delete</button>
+					</span>
+					<span ng-switch-when="yes">
+						<img src="images/loader.gif" alt="Loading"/>
+						<button class="baseButton standardButton buttonSmall buttonSpacing" disabled type="submit">Delete</button>
+					</span>
+				</td>
+			</tr>
+		</tbody>
+		<tfoot class="tableFooter">
+			<tr class="row">
+				<td class="large-4 medium-12 small-12 columns buttonAlignmentL">
+					<button class="baseButton standardButton selectedTextbooks" type="submit" ng-click="$apply(getTextbooksCart());gotoTextbooks();"><img class="buttonImg" src="images/book.png"/>View Textbooks for Selected</button>
+				</td>
+				<td class="large-8 medium-12 small-12 columns buttonAlignmentR" ng-switch on="majorActionPending">
+					<span ng-switch-when="no">
+						<button class="baseButton standardButton buttonLarge buttonSpacing classSelectButton" type="submit" ng-click=validateCart()>Validate Selected</button>
+						<button class="baseButton standardButton buttonLarge buttonSpacing classSelectButton" type="submit" ng-click=checkout()>Enroll Selected</button>
+						<button class="baseButton standardButton buttonLarge buttonSpacing classSelectButton" type="submit" data-reveal-id="clearModal">Clear Cart</button>
+					</span>
+					<span ng-switch-when="yes">
+						<img src="images/loader.gif" alt="Loading" style="margin:10px;"/>
+						<button class="baseButton standardButton buttonLarge buttonSpacing" type="submit" disabled>Validate Selected</button>
+						<button class="baseButton standardButton buttonLarge buttonSpacing" type="submit" disabled>Enroll Selected</button>
+						<button class="baseButton standardButton buttonLarge buttonSpacing" type="submit" disabled>Clear Cart</button>
+					</span>
+				</td>
+			</tr>					
+		</tfoot>
+	</table>
+</div>
+
+
+<div id="dropModal" class="reveal-modal tiny" data-reveal style="color:black !important;">
+	<h5 class="modalTitle">DROP/WITHDRAW</h5>
+	<hr/>
+	<p class="modalText">
+		Are you sure you would like to drop/withdraw from {{dropCourse.stuClass.courseTitleLong}}, 
+		{{ dropCourse.stuClass.subject }} {{ dropCourse.stuClass.catalogNumber }} {{ dropCourse.stuClass.section }} {{ dropCourse.stuClass.classNumber }}?
+	</p>
+	<br/>
+	<hr/>
+	<p class = "text-right">
+		<button class = "baseButton standardButton buttonSmall" ng-click="dropClass(dropCourse);closeModal('#dropModal')">
+			OK
+		</button>
+		<button class = "baseButton standardButton buttonSmall custom-close" ng-click="closeModal('#dropModal')">
+			Cancel
+		</button>
+	</p>
+</div>
+
+<div id="deleteModal" class="reveal-modal tiny" data-reveal style="color:black !important;">
+	<h5 class="modalTitle">DELETE</h5>
+	<hr/>
+	<p>
+		Are you sure you would like to delete {{deleteCourse.stuClass.courseTitleLong}}, 
+		{{ deleteCourse.stuClass.subject }} {{ deleteCourse.stuClass.catalogNumber }} {{ deleteCourse.stuClass.section }} {{ deleteCourse.stuClass.classNumber }}
+		from your shopping cart?
+	</p>
+	<br/>	
+	<hr/>
+	<p class = "text-right">
+		<button class = "baseButton standardButton buttonSmall" ng-click="removeFromCart(deleteCourse);closeModal('#deleteModal')">
+			OK
+		</button>
+		<button class = "baseButton standardButton buttonSmall custom-close" ng-click="closeModal('#deleteModal')">
+			Cancel
+		</button>
+	</p>
+</div>
+
+<div id="clearModal" class="reveal-modal tiny" data-reveal style="color:black !important;">
+	<h5 class="modalTitle">CLEAR CART</h5>
+	<hr/>
+	<p>
+		Are you sure you would like to clear all of your classes from all of your shopping carts?<br/><br/>
+		<b>NOTE: This will clear all shopping carts across all terms and careers.</b>
+	</p>
+	<br/>
+	<hr/>
+	<p class = "text-right">
+		<button class="baseButton standardButton buttonSmall" ng-click="clear();closeModal('#clearModal')">
+			OK
+		</button>
+		<button class="baseButton standardButton buttonSmall custom-close" ng-click="closeModal('#clearModal')">
+			Cancel
+		</button>
+	</p>
+</div>
+
+<div id="gradingModal" class="reveal-modal tiny" data-reveal style="color:black !important;">
+	<h5 class="modalTitle">GRADING OPTIONS</h5>
+	{{ grading.course.stuClass.courseTitleLong }}
+	<hr/>
+	<table class = "table" style = "border:none;">
+		<tr>
+			<td><label for="grd" class="result">Satisfactory/Failing</label></td>
+			<td><input ng-model="grading.option" name="gradings" class="customCheckbox" type="radio" value="S/F"  style="margin: 0;position: relative;top: 0;"></td>
+		</tr>
+		<tr>
+			<td><label for="sfa" class="result">Audit Option</label></td>
+			<td><input ng-model="grading.option" name="gradings" class="customCheckbox" type="radio" value="AUD"  style="margin: 0;position: relative;top: 0;"></td>
+		</tr>
+	</table>
+	<br/>
+	<hr/>
+	<p class = "text-right">
+		<button class = "baseButton standardButton buttonSmall custom-close" ng-click="closeModal('#gradingModal')">
+			Cancel
+		</button>
+		<button class = "baseButton standardButton buttonSmall" ng-click="editClass(grading.option, grading.course);closeModal('#gradingModal')">
+			Submit
+		</button>
+	</p>
+</div>
+
+<form action="http://rit.bncollege.com/webapp/wcs/stores/servlet/TBListView" name='books' method="POST" target="_blank" style="display:none">
+      <input type="hidden" name="storeId" value="35554"><br/>
+      <input type="hidden" name="termMapping" value="N"><br/>
+      <input type="hidden" name="catalogId" value="10001"><br/>
+      <input type="hidden" name="langId" value="-1"><br/>
+      <input type="hidden" name="courseXml" value="<textbookorder><school id='614' /><courses>{{ bookstore }}</courses></textbookorder>">
+</form>

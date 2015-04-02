@@ -1,0 +1,231 @@
+button[disabled]{
+	cursor: not-allowed !important;
+	border: none;
+}
+
+.baseButton{
+  height: 40px;
+  line-height: 40px;
+  padding: 0 5px 0 0;
+  display: inline-block;
+  font-family: $headerFont;
+  font-size:13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  text-decoration:none;
+  text-align:center;
+
+}
+
+.buttonXSmall{
+  width:85px;
+}
+
+.buttonSmall{
+  width:100px;
+}
+
+.buttonMedium{
+  width:160px;
+}
+
+.buttonLarge{
+  width: 185px;
+}
+
+.buttonXLarge{
+  width:200px;  
+}
+
+.buttonImg{
+  width: 25px;
+  margin: 0px 15px 7px 0;
+}
+
+
+.standardButton{
+  @include twoColorGradient(#F9F9F9, #E9E9E9);
+  background-color: $buttonBG;
+  @include boxShadow(inset 0px 1px 0px 0px #ffffff);
+  border: 1px solid $buttonBorderWhite;
+  text-shadow:2px 2px 0px #FFFFFF;
+  color: #666666 !important; 
+
+  &:hover, &:active, &:focus{
+    @include twoColorGradient(#E9E9E9, #F9F9F9);
+    background-color: $buttonBG;
+    @include boxShadow(inset 0px 1px 0px 0px #ffffff);
+    border: 1px solid $buttonBorderWhite;
+    text-shadow:2px 2px 0px #FFFFFF;
+    color: #666666 !important; 
+  }
+}
+
+.searchButton{
+  @include twoColorGradient(#FFB940, #F36E21);
+  background-color: #FFB940;
+  @include boxShadow(inset 0px 1px 0px 0px #FFB940);
+  border: 1px solid $buttonBorderOrange;
+  text-shadow:2px 2px 0px #C78925;
+  color: #FFFFFF !important;
+  
+  &:hover, &:active, &:focus{
+    @include twoColorGradient(#F36E21, #FFB940);
+    background-color: #F36E21;
+    @include boxShadow(inset 0px 1px 0px 0px #F36E21);
+    border: 1px solid $buttonBorderOrange;
+    text-shadow:2px 2px 0px #C78925;
+    color: #FFFFFF !important; 
+  }
+}
+
+.enrolledButton{
+  @include twoColorGradient(#8BC540, #008000); 
+  background-color: #8BC540;
+  @include boxShadow(inset 0px 1px 0px 0px #8BC540);
+  border: 1px solid #8BC540;
+  text-shadow:2px 2px 0px #004d00;
+  color: #FFFFFF !important; 
+  
+  &:hover, &:active, &:focus{
+    @include twoColorGradient(#008000,#8BC540); 
+    background-color: #008000;
+    @include boxShadow(inset 0px 1px 0px 0px #008000);
+    border: 1px solid #008000;
+    text-shadow:2px 2px 0px #004d00;
+    color: #FFFFFF !important; 
+  }
+}
+
+.waitlistButton{
+  @include twoColorGradient(#FFF281, #FFD800);
+  background-color: #FFF281;
+  @include boxShadow(inset 0px 1px 0px 0px #FFF281);
+  border: 1px solid #FFF281;
+  text-shadow:2px 2px 0px #EBC700;
+  color: #666666 !important; 
+  
+  &:hover, &:active, &:focus{
+    @include twoColorGradient(#FFF281, #FFF281);
+    background-color: #FFD800;
+    @include boxShadow(inset 0px 1px 0px 0px #FFD800);
+    border: 1px solid #FFD800;
+    text-shadow:2px 2px 0px #EBC700;
+    color: #666666 !important; 
+  }
+}
+
+.viewClassButton{
+  @include twoColorGradient(#BDD6EB, #418AC9);
+  background-color: #BDD6EB;
+  @include boxShadow(inset 0px 1px 0px 0px #BDD6EB);
+  border: 1px solid #BDD6EB;
+  text-shadow:2px 2px 0px #82b2d9;
+  color: #FFFFFF !important; 
+  
+  &:hover, &:active, &:focus{
+   @include twoColorGradient(#418AC9,#BDD6EB);
+    background-color: #418AC9;
+    @include boxShadow(inset 0px 1px 0px 0px #418AC9);
+    border: 1px solid #418AC9;
+    text-shadow:2px 2px 0px #82b2d9;
+    color: #FFFFFF !important; 
+}
+}
+
+.homeButtons{
+  background-color:#3f4040;
+  font-size: 15px;
+  color: #FFFFFF;
+  border-radius: 5px;
+
+  &:hover, &:active, &:focus{
+    background-color:#FFFFFF;
+    color: #3f4040;
+    line-height: normal;
+    border: solid;
+  }
+}
+
+.homeMenuButtons{
+  background-color:#3f4040;
+  font-size: 15px;
+  color: #FFFFFF;
+  border-top-left-radius:0;
+  border-top-right-radius:5px;
+  border-bottom-right-radius:5px;;
+  border-bottom-left-radius:0;
+  
+  &:hover, &:active, &:focus{
+    background-color:#FFFFFF;
+    color: #3f4040;
+    line-height: normal;
+    border: solid;
+  }
+  
+  &:focus{
+    border: none !important;
+    background-color: none !important;
+  }
+}
+
+
+.menuButton{
+  background-image: url(../images/menu.png);
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: 10px;
+  padding: 0px 5px 0px 35px;
+
+  &:hover, &:active, &:focus{
+    background-image: url(../images/menuBlack.png);
+  }
+}
+
+.menuHover{
+  background-image: url(../images/menu.png);
+  text-indent: 51px;
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: 14px;
+  padding-right: 10px;
+  transition: .5s;
+  width: 52px;
+  border: none;
+   
+  &:hover, &:active, &:focus{
+    width: 105px;
+    background-color:#3f4040;
+    color: #FFFFFF;
+    font-size: 15px;
+    border:none;
+  }
+  
+  &:active{
+    border:none;
+    outline: none;
+    width: 52px;
+  }
+  
+}
+
+.exploreButton{
+  background-image: url(../images/explore.png);
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: 10px;
+  padding: 0px 5px 0px 35px;
+
+  &:hover, &:active, &:focus{
+    background-image: url(../images/exploreBlack.png);
+  }
+}
+
+.downloadButton{
+  width:155px;
+}
+
+.calButton{
+  padding: 7px;
+  margin: 3px; 
+}

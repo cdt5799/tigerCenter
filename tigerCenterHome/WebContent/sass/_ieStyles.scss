@@ -1,0 +1,99 @@
+$textColorIE: #660000;
+$backgroundIE: #FEF5F1;
+$borderIE: #ED541D;
+
+#ieDisclaimer{
+  margin: 10px auto;
+  padding: 4px;
+  max-width: 1150px;
+  min-width: 925px;
+  background-color: $backgroundIE;
+  border: 1px solid $borderIE;
+  font-family: $bodyFont;
+  text-align: center;
+  color:$textColorIE;
+  
+  a{
+    text-decoration: none;
+    color: $headerFooterBG;
+  }
+  
+  &:hover, &:active, &:focus{
+    text-decoration: underline;
+    color: $headerFooterBG;
+  }
+  
+}
+
+.ie8Checkboxes{
+  margin-left:-10px;
+  display: none;  
+}
+
+#ieMessageWrapper{
+  margin-left: auto;
+  margin-right: auto;
+  width: 1150px;
+}
+
+#ie8{
+  display: inline-block;
+}
+
+#ieMessageHeader h1{
+  font-size: 1.7em;
+}
+
+#ie8MessageBody{
+  margin-left: 25px;
+  margin-right: 25px;
+  width: 500px;
+  font-size: 1.0em;
+
+  a{
+    text-decoration: none;
+    color: $headerFooterBG;
+  }
+  
+  &:hover, &:active, &:focus{
+    text-decoration: underline;
+    color: $headerFooterBG;
+  }
+}
+
+.ie8Highlight{
+  font-weight: bold;
+  color: $textColorIE;
+}
+
+#ie11{
+  float: right;
+}
+
+#ie11MessageHeader h1{
+  font-size: 1.7em;
+}
+
+#ie11MessageBody{
+  margin-left: 25px;
+  margin-right: 25px;
+  width: 500px;
+  font-size: 1em;
+  
+  a{
+    text-decoration: none;
+    color: $headerFooterBG;
+  }
+  
+  &:hover, &:active, &:focus{
+    text-decoration: underline;
+    color: $headerFooterBG;
+  }
+}
+
+.ie11Highlight{
+  font-weight: bold;
+  color: $textColorIE;
+}
+
+

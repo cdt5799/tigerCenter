@@ -1,0 +1,69 @@
+html, body{
+ height:100%;
+}
+
+body{
+  overflow-x: hidden;
+}
+
+.menuBtn{
+  height: content;
+  z-index: 1500;
+  top: 150px;
+  overflow:hidden;
+  position: fixed !important;
+  transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+}
+
+.menu{
+  overflow: auto;
+  text-align: center;
+  z-index: 1000;
+  width: 250px;
+  color: white;
+  background-color: #3f3f3f;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translate(-100%, 0);
+  transition: all 1s ease;
+  -webkit-transform: translate(-100%, 0);
+  -webkit-transition: all 1s ease;
+  -moz-transform: translate(-100%, 0);
+  -moz-transition: all 1s ease;
+  -o-transform: translate(-100%, 0);
+  -o-transition: all 1s ease;
+  -ms-transform: translate(-100%, 0);
+  -ms-transition: all 1s ease;  padding: 20px;
+
+  a{
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: white;
+    display: block;
+  }
+
+}
+
+.menuLinks{
+  color: inherit;
+  text-decoration: none;
+  
+  &:hover, &:active, &:focus{
+    color: #ffac76 !important;
+    text-decoration: none;  
+  }
+}
+
+
+#wrapper{
+  transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+}

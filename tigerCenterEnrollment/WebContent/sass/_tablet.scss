@@ -1,0 +1,98 @@
+@media only screen and (min-width: 640px) and (max-width: 768px) {
+ //desktop equivalent styles found in _globalStyles.scss
+  #header, #footer {
+    padding: 0 10px; 
+  }
+
+  #headRight, #footerRight {
+    text-align: left; 
+  }
+
+  //desktop equivalent styles found in _button.scss
+  .buttonImg {
+    margin: 0px 15px 3px 0; 
+  }
+
+  .buttonSmall {
+    width: 100%;
+    margin-bottom: 15px; 
+  }
+
+  .buttonLarge {
+    width: 100%; 
+  }
+
+  .selectedTextbooks{
+    width:100%;  
+  } 
+
+  //desktop equivalent styles found in _myClasses.scss
+  .userName {
+    padding-left: 0.9375rem;
+    padding-right: 0.9375rem;
+    margin: 0; 
+  }
+
+  .selectTermSchedule {
+    width: 100%;
+    margin: 15px 0;
+    border: 1px solid #cccccc;
+    padding: 0.5rem;
+    background-size: 25px 7px;
+    background-color: #f3f3f3; 
+  }
+
+  .classData {
+    text-align: left; 
+  }
+
+  .classTitle {
+    font-size: 20px;
+    display: block;
+    margin-left: 100px;
+    vertical-align: middle;
+    line-height: 1.1; 
+  }
+
+  .shopTitle {
+    color: #3f3f3f;
+    font-weight: 200;
+    font-size: 15pt;
+    padding: 20px 0;
+    line-height: 1.1; 
+  }
+
+  .statusText {
+    float: left; 
+  }
+
+  .buttonSpacing {
+    margin-left: 0px; 
+  }
+
+  .buttonAlignmentR {
+    text-align: center; 
+  }
+
+  .buttonAlignmentL {
+    text-align: center; 
+  }
+  
+  //desktop equivalent styles found in swap.scss
+  .verticalSwap {
+    padding-bottom: 30px; 
+  }
+
+  .whitebtn {
+    width: 100%; 
+  }
+  
+  //mobile specific
+  .calButton {
+    width: 100%; 
+  }
+
+  .classSelectButton {
+    margin-bottom: 15px; 
+  } 
+}

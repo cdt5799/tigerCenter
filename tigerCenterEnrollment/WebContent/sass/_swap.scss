@@ -1,0 +1,120 @@
+.swapTable{
+  width: 100%;
+  margin-top:20px;
+  
+    tr:nth-of-type(even){
+      background-color: transparent !important;
+    }
+ 
+    th{
+      background-color:#3f3f3f;
+      color:white;
+      opacity: 0.9;
+    }
+    
+    hr{
+      height: 1px;
+      background: #333;
+      margin: 0 0 10px;
+    }
+   
+}
+
+.swapSelection{
+  padding:10px;
+}
+
+.custom-arrow{
+  position:absolute;
+  margin: 10px 0;
+}
+
+.custom-arrow select{
+    background: transparent url("../images/arrow_down_orange.png") no-repeat 99% center;
+    background-size: 10px 5px;
+    margin:10px 0;
+}
+
+.orangeBtn{
+  height: 38px;
+  text-align: center;
+  color:#FFFFFF;
+  border: 1px solid #eeb44f;
+  @include twoColorGradient(#ffc25a, #f36e21); 
+}
+
+.orangeBtn:hover{
+  @include twoColorGradient(#f36e21, #ffc25a);  
+}
+
+.whiteBtn{ 
+  text-align: center;
+  color:#666666;
+  border: 1px solid #e9e9e9;
+  @include twoColorGradient(#f9f9f9, #e9e9e9); 
+  line-height:40px;
+}
+
+.swapWhiteBtn{
+  display: inline-block;
+  height: 38px;
+  width: 100px;
+  margin-left:10px;
+}
+
+.swapWhiteBtn:hover{
+  color:#666666;
+  @include twoColorGradient(#e9e9e9, #f9f9f9);
+}
+
+.classHolder{
+  width: 100%;
+  border: 1px solid #666666;
+  height: auto;
+  padding: 5px;
+}
+
+.orangeTxt{
+  color: #f36e21;
+  
+  &:hover, &:active, &:focus{
+    color: #f36e21;
+    text-decoration: underline;
+  }
+}
+
+.greenTxt{
+  color: #008000; 
+}
+
+.verticalRule{
+  border-left: 1px solid #000; 
+  height: 70px;
+}
+
+.verticalClass{
+  position: relative; 
+  top: 10px;
+}
+
+.verticalSwap{
+  position: relative;
+  top:20px;
+}
+
+.testholder{
+  border: 1px solid blue;
+}
+
+.align-bottom{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+
+.indentNumber{
+  margin-left: 25px;
+}
+
+

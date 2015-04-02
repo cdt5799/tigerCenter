@@ -1,0 +1,362 @@
+<div class="row" ng-if="error != null">
+	<div id="error" class="large-12 error message">
+		<b>Error: </b>{{ error.description }} ({{error.id}})
+	</div>
+</div>
+<span style="margin-right:25px; display:none;">{{ resolveTerms(termSelect) }}</span>
+<div class="row collapse">
+	<div class="large-12 medium-12 small-12 columns" style="margin-bottom:20px">
+		<strong class="nameRow large-7 medium-12 small-12 columns">{{ user.givenName }} ({{ month }})</strong>
+		<strong class="large-3 medium-12 small-12 columns">
+			<select ng-if="fields.loaded" ng-model="form.termSelect" ng-change="changeTerm()" 
+			ng-options="term.strm as term.descr for term in fields.filterTerms" class="selectTermSchedule ng-scope ng-pristine ng-valid" >
+			</select>
+		</strong>
+  		<span class="large-2 columns medium-12 small-12 columns" id="colPad" >
+  			<a href="{{enrollUrl}}">
+  				<button class="baseButton standardButton buttonLarge" type="submit">
+  					<img class="buttonImg" src="images/list.png"/ style=" width: 20px;margin-top: 3px;">Manage Classes 
+  				</button>
+  			</a>
+  		</span>
+	</div>
+</div>
+<div class="row">
+	<div class="large-10 medium-12 small-12 columns" id="calendar" ui-calendar="options" ng-model="eventSources" calendar="mainCal"></div>
+	<div class="large-2 medium-12 small-12 columns sidebar">
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<p id="stop3"><label for="datepicker" style="display:inline;">Date:</label> <input type="text" id="datepicker" ng-model="filter.date" ng-change="changeDate()" class="dateChooser"></p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<hr/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns" style="text-align:center;">
+  				<button class="standardButton calButton" ng-click="changeCalendarView('month')"><img src="images/calendar-month-black.png" alt="Month"/></button>
+  				<button class="standardButton calButton" ng-click="changeCalendarView('agendaWeek')"><img src="images/calendar-week-black.png" alt="Week"/></button>
+  				<button class="standardButton calButton" ng-click="changeCalendarView('agendaDay')"><img src="images/calendar-day-black.png" alt="Day"/></button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<hr/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="military" type="checkbox" ng-model="filter.militaryTime" ng-change="changeToMilitary()"/> <label for="military"> 24 Hour</label>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="wait" type="checkbox" ng-model="filter.waitlist" ng-change="toggleWaitlist()"/> <label for="wait"> Waitlisted</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="hol" type="checkbox" ng-model="filter.holiday" ng-change="toggleHolidays()" style="margin-bottom:0;"/> <label for="hol"> Holiday</label>
+			</div>
+		</div>
+		<hr/>
+		<div class="row ">
+			<div class="large-12 medium-12 small-12 columns">
+					<input id="sun" type="checkbox" ng-model="filter.sunday" ng-change="toggleHiddenDays()"/> <label for="sun"> Sunday</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="mo" type="checkbox" ng-model="filter.monday" ng-change="toggleHiddenDays()"/> <label for="mo"> Monday</label>
+			</div>
+		</div>		
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="tu" type="checkbox" ng-model="filter.tuesday" ng-change="toggleHiddenDays()"/> <label for="tu"> Tuesday</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="we" type="checkbox" ng-model="filter.wednesday" ng-change="toggleHiddenDays()"/> <label for="we"> Wednesday</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="th" type="checkbox" ng-model="filter.thursday" ng-change="toggleHiddenDays()"/> <label for="th"> Thursday</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="fr" type="checkbox" ng-model="filter.friday" ng-change="toggleHiddenDays()"/> <label for="fr"> Friday</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<input id="sa" type="checkbox" ng-model="filter.saturday" ng-change="toggleHiddenDays()" style="margin-bottom:0;"/> <label for="sa"> Saturday</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<hr/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 medium-12 small-12 columns">
+				<button class="baseButton standardButton downloadButton" type="submit" id="download" ng-click="downloadCalendar()">Download</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row" ng-if="(nonMeetingClasses | filter:termFilter()).length > 0">
+	<div class="large-12 medium-12 small-12 columns" id="noCal">
+		<table class="noMeetingInfo large-12 medium-12 small-12 columns">
+			<thead>
+				<tr>
+					<th>MEETING INFORMATION NOT AVAILABLE </br> (Typically online classes, co-ops, or classes without announced meetings are found here)</th>
+				</tr>
+				<tr class="row show-for-large-only" style="opacity:0.9">
+					<th class="large-3 columns">Name</th>
+					<th class="large-2 columns">Status</th>
+					<th class="large-3 columns">Course Number</th>
+					<th class="large-2 columns">Instructor</th>
+					<th class="large-2 columns">Type</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="row" ng-repeat="class in nonMeetingClasses | filter:termFilter()">
+					<td class="hide-for-large-only small-5 medium-3 columns"><strong>Name</strong></td>
+					<td class="large-3 medium-9 small-7 columns">{{class.title}}</td>
+					<td class="hide-for-large-only small-5 medium-3 columns"><strong>Status</strong></td>
+					<td class="large-2 medium-9 small-7 columns" ng-switch on="class.enrlStatusReason">
+						<span ng-switch-when="EWAT"><img src="images/wait.png" alt="Waitlisted"/> Waitlisted</span>
+						<span ng-switch-when="ENRL"><img src="images/open.png" alt="Enrolled"/> Enrolled</span>
+						<span ng-switch-default><img src="images/close.png" alt="Dropped"/> Dropped</span>
+					</td>
+					<td class="hide-for-large-only small-5 medium-3  columns"><strong>Course Number</strong></td>
+					<td class="large-3 medium-9 small-7 columns">{{class.subject}} - {{class.catalogNbr}}</td>
+					<td class="hide-for-large-only small-5 medium-3 columns"><strong>Instructor</strong></td>
+					<td class="large-2 medium-9 small-7 columns">{{class.instructor}}</td>
+					<td class="hide-for-large-only small-5 medium-3 columns"><strong>Type</strong></td>
+					<td class="large-2 medium-9 small-7 columns">{{resolveComponent(class)}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class = "row collapse">
+	<div class = "large-12 medium-12 small-12 columns">
+		<div class = "large-3 medium-12 small-12 columns" id="importantInfo">
+			<table class = "homeTable">
+				<thead>
+					<tr>
+						<th colspan = "2"><p id="stop4">ADVISOR</p></th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- <tr>
+						<td><p><strong>Academic Program:</strong></p></td>
+						<td><p>UGRD Imaging Arts &amp; Sciences</p></td>
+					</tr> -->
+					<tr ng-repeat="advisor in advisors">
+						<td><p><strong>{{advisor.descr}}</strong></p></td>
+						<td><a href="mailto:{{advisor.email}}" class="orangeTxt">{{advisor.fullName}}</a></td>
+					</tr>
+					<tr ng-if="!loaded">
+						<td colspan="2"><p><strong><img src="images/loader.gif"/> Loading</strong></p></td>
+					</tr>
+					<tr ng-if="error == null && advisors.length == 0 && loaded">
+						<td colspan="2"><p><strong>You currently do not have any advisors on your account.</strong></p></td>
+					</tr>
+					<tr ng-if="error != null && advisors.length == 0 && loaded">
+						<td colspan="2"><p><strong>This data is currently not available.</strong></p></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class = "large-3 medium-12 small-12 columns" id="importantInfo">
+			<table class = "homeTableInverse">
+				<thead>
+					<tr>
+						<th colspan = "2"><p id="stop5">HOLDS</p></th>
+					</tr>
+				</thead>
+				<tbody ng-repeat="hold in holds">
+					<tr>
+						<td colspan = "2" class = "whiteBG">
+							<strong>{{hold.hold_desc}}</strong>
+							<hr/>
+						</td>
+					</tr>
+					<tr>
+						<td><p><strong>Reason:</strong></p></td>
+						<td><p>{{hold.reason}}</p></td>
+					</tr>
+					<tr>
+						<td><p><strong>Department:</strong></p></td>
+						<td><p>{{hold.dept_desc}}</p></td>
+					</tr>
+					<tr>
+						<td><p><strong>Instructions:</strong></p></td>
+						<td><p>{{hold.instruction}}</p></td>
+					</tr>
+				</tbody>
+				<tbody ng-if="!loaded">
+					<tr>
+						<td colspan="2">	
+							<p><strong><img src="images/loader.gif"/> Loading</strong></p>
+						</td>
+					</tr>
+				</tbody>
+				<tbody ng-if="error == null && holds.length == 0 && loaded">
+					<tr>
+						<td colspan="2">	
+							<p><strong>There are currently no holds on your account.</strong></p>
+						</td>
+					</tr>
+				</tbody>
+				<tbody ng-if="error != null && holds.length == 0 && loaded">
+					<tr>
+						<td colspan="2">	
+							<p><strong>This data is currently not available.</strong></p>
+						</td>
+					</tr>
+				</tbody>
+			</table>			
+		</div> 
+		
+		<div class="large-3 medium-12 small-12 columns" id="dates importantInfo">
+			<table class="homeTableInverse">
+				<thead>
+					<tr>
+						<th colspan="2"><p id="stop6">ENROLLMENT DATES</p></th>
+					</tr>
+				</thead>
+				<tbody ng-if="error == null">
+					<tr>
+						<td colspan="2" class="whiteBG">
+							<strong style="float: left; color:#F36E21;">TERM:</strong>
+							<div class="homeCustomArrow">
+								<select class="customSelectMenu" ng-model="$parent.termSelect"
+								ng-options="term.strm as term.descr for term in fields.termField"></select>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan = "2" style = "background-color: #ffffff !important;">
+							<strong>Shopping Cart Appointment</strong>
+							<hr>
+						</td>
+					</tr>
+					<tr ng-if="shoppingTermActive">
+						<td><p><strong>Appointment Begins:</strong></p></td>
+						<td><p>{{getDateStrings().shoppingStart}}</p></td>
+					</tr>
+					<tr ng-if="shoppingTermActive">
+						<td><p><strong>Appointment Ends:</strong></p></td>
+						<td><p>{{getDateStrings().shoppingEnd}}</p></td>
+					</tr>
+					<tr ng-if="!shoppingTermActive">
+						<td colspan="2"><p>{{getDateStrings().shoppingEnd}}</p></td>
+					</tr>
+					<tr>
+						<td colspan = "2" style = "background-color: #ffffff !important;">
+							<strong>Enrollment Appointment</strong>
+							<hr>
+						</td>
+					</tr>
+					<tr ng-if="enrollTermActive">
+						<td><p><strong>Appointment Begins:</strong></p></td>
+						<td><p>{{getDateStrings().enrollStart}}</p></td>
+					</tr>
+					<tr ng-if="enrollTermActive">
+						<td><p><strong>Appointment Ends:</strong></p></td>
+						<td><p>{{getDateStrings().enrollEnd}}</p></td>
+					</tr>
+					<tr ng-if="!enrollTermActive">
+						<td colspan="2"><p>{{getDateStrings().enrollEnd}}</p></td>
+					</tr>
+				</tbody>
+				<tbody ng-if="error != null">
+					<tr>
+						<td colspan="2"><p><strong>This data is currently not available.</strong></p></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class = "large-3 medium-12 small-12 columns" id="importantInfo">
+			<table class = "homeTable">
+				<thead>
+					<tr>
+						<th colspan = "2"><p id="stop7">IMPORTANT DATES</p></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="date in dates">
+						<td><p><strong>{{date.desc}}</strong></p></td>
+						<td><p>{{date.date}}</p></td>
+					</tr>
+					<tr ng-if="error == null && dates.length == 0">
+						<td colspan="2"><p><strong><img src="images/loader.gif"/> Loading</strong></p></td>
+					</tr>
+					<tr ng-if="error != null && dates.length == 0">
+						<td colspan="2"><p><strong>This data is currently not available.</strong></p></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<ol class="joyride-list" data-joyride>
+  <li data-id="start" data-text="Next" data-options="tip_location: top; prev_button: false">
+    <p>Welcome to Tiger Center, a site designed by RIT students for RIT students. Let's explore some of this page’s features!</p>
+  </li>
+  <li data-id="stop2" data-text="Next" data-prev-text="Prev" data-options="tip_location: bottom">
+    <h5>Menu</h5>
+    <p>You can easily navigate to important pages within TigerCenter using the menu. Click the icon to open the menu.</p>
+    <p>At the bottom of the menu are some useful links to different external RIT resources and sites.</p> 
+  </li>
+  <li data-class="fc-agenda-axis" data-text="Next" data-options="tip_location: top">
+    <h5>Calendar</h5>
+    <p>You can view your class schedule in a customizable format. By default the schedule starts at 8 am; scroll to see earlier and later times. Hover over classes that appear in the calendar for more information.</p>
+  	<p>Classes shown in green on the calendar are enrolled classes, classes shown in yellow are wait-listed classes and classes that appear below the calendar have no meeting information (usually these are online classes or co-ops).</p> 
+  </li>
+  <li data-id="stop3" data-text="Next" data-options="tip_location: top">
+  	<h5>Date</h5>
+    <p>Change the date by typing or by using our date picker.</p>
+  </li>
+  <li data-id="military" data-text="Next" data-options="tip_location: top">
+  	<h5>Filters</h5>
+  	<p>Use the filters to toggle on and off different options, such as showing classes you are wait listed for or changing the time to a 24-hour clock.</p>
+  </li>
+  <li data-id="download" data-text="Next" data-options="tip_location: top">
+  	<h5>Download Schedule</h5>
+  	<p>Download your schedule to your personal calendar in iCal format.</p>
+  </li>
+  <li data-id="stop4" data-text="Next" data-options="tip_location: top">
+    <h5>Advisors</h5>
+    <p>Not sure who your advisors are or how to contact them? Your current advisors are listed below. Just click their names to send an email.</p>
+  </li>
+  <li data-id="stop5" data-text="Next" data-options="tip_location: top">
+    <h5>Holds</h5>
+  	<p>If you have a hold on your account it will show up here. Check out the instructions to find out how to resolve the hold.</p>
+  </li>
+  <li data-id="stop6" data-text="Next" data-options="tip_location: top">
+  	<h5>Enrollment & Shopping Cart Appointments</h5>
+  	<p>Find out when your shopping cart opens and when you can enroll in your classes for upcoming terms. Change the term using the dropdown menu.</p>
+  </li>
+  <li data-id="stop7" data-text="Next" data-options="tip_location: top">
+  	<h5>Important Dates</h5>
+  	<p>This lists relevant upcoming dates, such as the last day to add/drop classes.</p>
+  </li> 
+  <li data-button="end" data-prev-text="Prev">
+    <h5>Feedback</h5>
+    <p>Do you have ideas to help us improve the Tiger Center? Please let us know.</p>
+  </li>
+</ol>

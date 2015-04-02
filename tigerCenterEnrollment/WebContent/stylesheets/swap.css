@@ -1,0 +1,100 @@
+.table {
+  width: 100%;
+  margin-top: 20px; }
+  .table tr:nth-of-type(even) {
+    background-color: transparent !important; }
+  .table th {
+    background-color: #3f3f3f;
+    color: white;
+    opacity: 0.9; }
+  .table hr {
+    height: 1px;
+    background: #333; }
+
+.custom-arrow {
+  position: absolute; }
+
+.custom-arrow select {
+  margin-top: 20px;
+  background: transparent url("../images/arrow_down_orange.png") no-repeat 99% center;
+  background-size: 10px 5px; }
+
+.orangeBtn {
+  height: 38px;
+  text-align: center;
+  color: #FFFFFF;
+  border: 1px solid #eeb44f;
+  background: -webkit-linear-gradient(#ffc25a, #f36e21);
+  background: -o-linear-gradient(#ffc25a, #f36e21);
+  background: -moz-linear-gradient(#ffc25a, #f36e21);
+  background: linear-gradient(#ffc25a, #f36e21); }
+
+.orangeBtn:hover {
+  background: -webkit-linear-gradient(#f36e21, #ffc25a);
+  background: -o-linear-gradient(#f36e21, #ffc25a);
+  background: -moz-linear-gradient(#f36e21, #ffc25a);
+  background: linear-gradient(#f36e21, #ffc25a); }
+
+.whiteBtn {
+  display: inline-block;
+  height: 38px;
+  width: 100px;
+  text-align: center;
+  color: #666666;
+  border: 1px solid #e9e9e9;
+  background: -webkit-linear-gradient(#f9f9f9, #e9e9e9);
+  background: -o-linear-gradient(#f9f9f9, #e9e9e9);
+  background: -moz-linear-gradient(#f9f9f9, #e9e9e9);
+  background: linear-gradient(#f9f9f9, #e9e9e9);
+  line-height: 40px;
+  margin-left: 10px; }
+
+.whiteBtn:hover {
+  color: #666666;
+  background: -webkit-linear-gradient(#e9e9e9, #f9f9f9);
+  background: -o-linear-gradient(#e9e9e9, #f9f9f9);
+  background: -moz-linear-gradient(#e9e9e9, #f9f9f9);
+  background: linear-gradient(#e9e9e9, #f9f9f9); }
+
+.classHolder {
+  width: 100%;
+  border: 1px solid #666666;
+  height: 80px;
+  padding: 5px; }
+
+.orangeTxt {
+  color: #f36e21; }
+
+.greenTxt {
+  color: #008000; }
+
+.verticalRule {
+  border-left: 1px solid #000;
+  height: 70px; }
+
+.verticalClass {
+  position: relative;
+  top: 10px; }
+
+.verticalSwap {
+  position: relative;
+  top: 20px; }
+
+.testholder {
+  border: 1px solid blue; }
+
+.align-bottom {
+  position: absolute;
+  right: 0;
+  bottom: 0; }
+
+@media only screen and (max-width: 64.063em) {
+  .classHolder {
+    text-align: center;
+    height: content; }
+
+  .verticalSwap {
+    padding-bottom: 30px; }
+
+  .whitebtn {
+    width: 100%; } }
