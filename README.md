@@ -18,4 +18,4 @@ Phase 1: https://vimeo.com/122684874 <br>
 Phase 2: https://vimeo.com/123289039 <br>
 <br>
 
-&#35;&#35;&#35; 	NOTE: Front-end code only   &#35;&#35;&#35;	<br>
+NOTE: Front-end code only
