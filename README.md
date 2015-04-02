@@ -16,3 +16,7 @@ http://ritbehindthebricks.com/behind-the-scenes-with-the-student-it-office/
 Videos: <br>
 Phase 1: https://vimeo.com/122684874 <br>
 Phase 2: https://vimeo.com/123289039 <br>
+<br>
+
+&#35;	&#35;	&#35;	NOTE: &#35;	&#35;	&#35;	<br>
+Front-end code only 
