@@ -10,7 +10,7 @@ tigercenter.rit.edu (main application — without an RIT login you will not be a
 Featured Articles:<br>
 http://ritbehindthebricks.com/tiger-center/ <br>
 http://ritbehindthebricks.com/using-rits-tiger-center/ <br>
-http://ritbehindthebricks.com/behind-the-scenes-with-the-student-it-office/ <br>
+http://ritbehindthebricks.com/behind-the-scenes-with-the-student-it-office/ 
 <br>
 <br>
 Videos: <br>
